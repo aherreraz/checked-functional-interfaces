@@ -45,7 +45,7 @@ public class LambdaExceptionUtilTest {
             CheckedFunction<String, Method, NoSuchMethodException> function = accessor::getGetterMethodForField;
             String fieldName = "integerField";
 
-            String actual = rethrowFunction(function).apply(fieldName).getName();
+            String actual = toFunction(function).apply(fieldName).getName();
             String expected = "getIntegerField";
             assertEquals(actual, expected);
         }
@@ -57,7 +57,7 @@ public class LambdaExceptionUtilTest {
             String fieldName = "invalidField";
 
             assertThrows(NoSuchMethodException.class,
-                    () -> rethrowFunction(function).apply(fieldName));
+                    () -> toFunction(function).apply(fieldName));
         }
 
         @Test
@@ -66,7 +66,7 @@ public class LambdaExceptionUtilTest {
             CheckedFunction<String, Integer, ReflectiveOperationException> function = accessor::getValueForField;
 
             List<Integer> actual = Stream.of("integerField", "integerField2", "integerField3")
-                    .map(rethrowFunction(function))
+                    .map(toFunction(function))
                     .collect(Collectors.toList());
             List<Integer> expected = List.of(1, 2, 3);
             assertThat(actual).usingRecursiveComparison().ignoringCollectionOrder().isEqualTo(expected);
@@ -79,7 +79,7 @@ public class LambdaExceptionUtilTest {
 
             assertThrows(NoSuchMethodException.class,
                     () -> Stream.of("invalidField", "invalidField2", "invalidField3")
-                            .map(rethrowFunction(function))
+                            .map(toFunction(function))
                             .collect(Collectors.toList()));
         }
     }
@@ -93,7 +93,7 @@ public class LambdaExceptionUtilTest {
             CheckedConsumer<String, NoSuchMethodException> consumer = accessor::printGetterMethodForField;
             String fieldName = "integerField";
 
-            rethrowConsumer(consumer).accept(fieldName);
+            toConsumer(consumer).accept(fieldName);
         }
 
         @Test
@@ -103,7 +103,7 @@ public class LambdaExceptionUtilTest {
             String fieldName = "invalidField";
 
             assertThrows(NoSuchMethodException.class,
-                    () -> rethrowConsumer(consumer).accept(fieldName));
+                    () -> toConsumer(consumer).accept(fieldName));
         }
 
         @Test
@@ -112,7 +112,7 @@ public class LambdaExceptionUtilTest {
             CheckedConsumer<String, NoSuchMethodException> consumer = accessor::printGetterMethodForField;
 
             Stream.of("integerField", "integerField2", "integerField3")
-                    .forEach(rethrowConsumer(consumer));
+                    .forEach(toConsumer(consumer));
         }
 
         @Test
@@ -122,7 +122,7 @@ public class LambdaExceptionUtilTest {
 
             assertThrows(NoSuchMethodException.class,
                     () -> Stream.of("invalidField", "invalidField2", "invalidField3")
-                            .forEach(rethrowConsumer(consumer)));
+                            .forEach(toConsumer(consumer)));
         }
     }
 
@@ -134,7 +134,7 @@ public class LambdaExceptionUtilTest {
         public void checkedRunnable_success() throws ReflectiveOperationException {
             CheckedRunnable<ReflectiveOperationException> runnable = accessor::printDeclaredFieldValues;
 
-            rethrowRunnable(runnable).run();
+            toRunnable(runnable).run();
         }
 
         @Test
@@ -148,7 +148,7 @@ public class LambdaExceptionUtilTest {
             CheckedRunnable<ReflectiveOperationException> runnable = accessor::printDeclaredFieldValues;
 
             assertThrows(NoSuchMethodException.class,
-                    () -> rethrowRunnable(runnable).run());
+                    () -> toRunnable(runnable).run());
         }
     }
 }

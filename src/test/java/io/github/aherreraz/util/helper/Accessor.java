@@ -8,7 +8,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.stream.Stream;
 
-import static io.github.aherreraz.util.LambdaExceptionUtil.rethrowFunction;
+import static io.github.aherreraz.util.LambdaExceptionUtil.toFunction;
 
 @Data
 @Builder
@@ -35,7 +35,7 @@ public class Accessor {
     public void printDeclaredFieldValues() throws ReflectiveOperationException {
         Class<?> clazz = object.getClass();
         Stream.of(clazz.getDeclaredFields())
-                .map(rethrowFunction(field -> getValueForField(field.getName())))
+                .map(toFunction(field -> getValueForField(field.getName())))
                 .forEach(System.out::println);
     }
 

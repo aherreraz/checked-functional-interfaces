@@ -8,7 +8,7 @@ import java.util.function.Consumer;
 import java.util.function.Function;
 
 public class LambdaExceptionUtil {
-    public static <T, R, E extends Exception> Function<T, R> rethrowFunction(CheckedFunction<T, R, E> function) throws E {
+    public static <T, R, E extends Exception> Function<T, R> toFunction(CheckedFunction<T, R, E> function) throws E {
         return t -> {
             R result = null;
             try {
@@ -20,7 +20,7 @@ public class LambdaExceptionUtil {
         };
     }
 
-    public static <T, E extends Exception> Consumer<T> rethrowConsumer(CheckedConsumer<T, E> consumer) throws E {
+    public static <T, E extends Exception> Consumer<T> toConsumer(CheckedConsumer<T, E> consumer) throws E {
         return t -> {
             try {
                 consumer.accept(t);
@@ -30,7 +30,7 @@ public class LambdaExceptionUtil {
         };
     }
 
-    public static <E extends Exception> Runnable rethrowRunnable(CheckedRunnable<E> runnable) throws E {
+    public static <E extends Exception> Runnable toRunnable(CheckedRunnable<E> runnable) throws E {
         return () -> {
             try {
                 runnable.run();
