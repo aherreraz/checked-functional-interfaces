@@ -1,7 +1,9 @@
 package io.github.aherreraz.util;
 
+import io.github.aherreraz.util.function.CheckedConsumer;
 import io.github.aherreraz.util.function.CheckedFunction;
 
+import java.util.function.Consumer;
 import java.util.function.Function;
 
 public class LambdaExceptionUtil {
@@ -14,6 +16,16 @@ public class LambdaExceptionUtil {
                 throwActualException(exception);
             }
             return result;
+        };
+    }
+
+    public static <T, E extends Exception> Consumer<T> rethrow(CheckedConsumer<T, E> consumer) throws E {
+        return t -> {
+            try {
+                consumer.accept(t);
+            } catch (Exception exception) {
+                throwActualException(exception);
+            }
         };
     }
 
