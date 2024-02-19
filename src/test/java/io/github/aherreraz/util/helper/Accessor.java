@@ -16,6 +16,11 @@ public class Accessor {
         return clazz.getMethod("get" + capitalize(fieldName));
     }
 
+    public void printGetterMethodForField(String fieldName) throws NoSuchMethodException {
+        Method getterMethod = getGetterMethodForField(fieldName);
+        System.out.println(getterMethod);
+    }
+
     @SuppressWarnings("unchecked")
     public <T> T getValueForField(String fieldName) throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
         Method getterMethod = getGetterMethodForField(fieldName);
