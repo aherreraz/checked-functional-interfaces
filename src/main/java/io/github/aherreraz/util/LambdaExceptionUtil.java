@@ -7,12 +7,13 @@ import java.util.function.Function;
 public class LambdaExceptionUtil {
     public static <T, R, E extends Exception> Function<T, R> rethrow(CheckedFunction<T, R, E> function) throws E {
         return t -> {
+            R result = null;
             try {
-                return function.apply(t);
+                result = function.apply(t);
             } catch (Exception exception) {
                 throwActualException(exception);
-                return null;
             }
+            return result;
         };
     }
 
