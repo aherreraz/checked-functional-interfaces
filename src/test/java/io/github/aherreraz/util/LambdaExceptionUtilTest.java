@@ -1,9 +1,6 @@
 package io.github.aherreraz.util;
 
-import io.github.aherreraz.util.function.CheckedConsumer;
-import io.github.aherreraz.util.function.CheckedFunction;
-import io.github.aherreraz.util.function.CheckedPredicate;
-import io.github.aherreraz.util.function.CheckedRunnable;
+import io.github.aherreraz.util.function.*;
 import io.github.aherreraz.util.helper.Accessor;
 import io.github.aherreraz.util.helper.TestObject;
 import io.github.aherreraz.util.helper.TestObjectWithPrivateFields;
@@ -214,6 +211,34 @@ public class LambdaExceptionUtilTest {
                     () -> Stream.of("integerField", "integerField2", "integerField3", "privateIntegerField")
                             .filter(toPredicate(predicate))
                             .collect(Collectors.toList()));
+        }
+    }
+
+    @Nested
+    @DisplayName("Checked Supplier")
+    class CheckedSupplierTest {
+        @Test
+        @DisplayName("Should get value from supplier")
+        public void checkedSupplier_success() throws ReflectiveOperationException {
+            CheckedSupplier<List<Object>, ReflectiveOperationException> supplier = accessor::getDeclaredFieldValues;
+
+            List<Object> actual = toSupplier(supplier).get();
+            List<Object> expected = List.of(1, 2, 3);
+            assertThat(actual).usingRecursiveComparison().ignoringCollectionOrder().isEqualTo(expected);
+        }
+
+        @Test
+        @DisplayName("Should rethrow exception in supplier")
+        public void checkedRunnable_rethrowException() {
+            TestObjectWithPrivateFields object = TestObjectWithPrivateFields.builder()
+                    .integerField(1)
+                    .integerField2(2)
+                    .privateIntegerField(3).build();
+            accessor.setObject(object);
+            CheckedSupplier<List<Object>, ReflectiveOperationException> supplier = accessor::getDeclaredFieldValues;
+
+            assertThrows(NoSuchMethodException.class,
+                    () -> toSupplier(supplier).get());
         }
     }
 }

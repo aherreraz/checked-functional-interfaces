@@ -5,6 +5,8 @@ import lombok.Builder;
 import lombok.Data;
 
 import java.lang.reflect.Method;
+import java.util.List;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static io.github.aherreraz.util.LambdaExceptionUtil.toFunction;
@@ -31,10 +33,15 @@ public class Accessor {
         return (T) getterMethod.invoke(object);
     }
 
-    public void printDeclaredFieldValues() throws ReflectiveOperationException {
+    public List<Object> getDeclaredFieldValues() throws ReflectiveOperationException {
         Class<?> clazz = object.getClass();
-        Stream.of(clazz.getDeclaredFields())
+        return Stream.of(clazz.getDeclaredFields())
                 .map(toFunction(field -> getValueForField(field.getName())))
+                .collect(Collectors.toList());
+    }
+
+    public void printDeclaredFieldValues() throws ReflectiveOperationException {
+        Stream.of(getDeclaredFieldValues())
                 .forEach(System.out::println);
     }
 
