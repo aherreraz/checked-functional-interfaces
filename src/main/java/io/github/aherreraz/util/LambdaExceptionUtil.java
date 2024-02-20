@@ -2,10 +2,12 @@ package io.github.aherreraz.util;
 
 import io.github.aherreraz.util.function.CheckedConsumer;
 import io.github.aherreraz.util.function.CheckedFunction;
+import io.github.aherreraz.util.function.CheckedPredicate;
 import io.github.aherreraz.util.function.CheckedRunnable;
 
 import java.util.function.Consumer;
 import java.util.function.Function;
+import java.util.function.Predicate;
 
 public class LambdaExceptionUtil {
     public static <T, R, E extends Exception> Function<T, R> toFunction(CheckedFunction<T, R, E> function) throws E {
@@ -37,6 +39,18 @@ public class LambdaExceptionUtil {
             } catch (Exception exception) {
                 throwActualException(exception);
             }
+        };
+    }
+
+    public static <T, E extends Exception> Predicate<T> toPredicate(CheckedPredicate<T, E> predicate) throws E {
+        return t -> {
+            boolean result = false;
+            try {
+                result = predicate.test(t);
+            } catch (Exception exception) {
+                throwActualException(exception);
+            }
+            return result;
         };
     }
 
