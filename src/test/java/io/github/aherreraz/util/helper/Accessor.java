@@ -27,7 +27,7 @@ public class Accessor {
     }
 
     @SuppressWarnings("unchecked")
-    public <T> T getValueForField(String fieldName) throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
+    public <T> T getValueForField(String fieldName) throws ReflectiveOperationException {
         Method getterMethod = getGetterMethodForField(fieldName);
         return (T) getterMethod.invoke(object);
     }
@@ -37,6 +37,10 @@ public class Accessor {
         Stream.of(clazz.getDeclaredFields())
                 .map(toFunction(field -> getValueForField(field.getName())))
                 .forEach(System.out::println);
+    }
+
+    public boolean doesFieldHaveValue(String fieldName) throws ReflectiveOperationException {
+        return getValueForField(fieldName) != null;
     }
 
     private static String capitalize(String str) {

@@ -2,6 +2,7 @@ package io.github.aherreraz.util;
 
 import io.github.aherreraz.util.function.CheckedConsumer;
 import io.github.aherreraz.util.function.CheckedFunction;
+import io.github.aherreraz.util.function.CheckedPredicate;
 import io.github.aherreraz.util.function.CheckedRunnable;
 import io.github.aherreraz.util.helper.Accessor;
 import io.github.aherreraz.util.helper.TestObject;
@@ -138,7 +139,7 @@ public class LambdaExceptionUtilTest {
         }
 
         @Test
-        @DisplayName("Should run runnable")
+        @DisplayName("Should rethrow exception in runnable")
         public void checkedRunnable_rethrowException() {
             TestObjectWithPrivateFields object = TestObjectWithPrivateFields.builder()
                     .integerField(1)
@@ -149,6 +150,70 @@ public class LambdaExceptionUtilTest {
 
             assertThrows(NoSuchMethodException.class,
                     () -> toRunnable(runnable).run());
+        }
+    }
+
+    @Nested
+    @DisplayName("Checked Predicate")
+    class CheckedPredicateTest {
+        @Test
+        @DisplayName("Should test predicate")
+        public void checkedPredicate_success() throws ReflectiveOperationException {
+            CheckedPredicate<String, ReflectiveOperationException> predicate = accessor::doesFieldHaveValue;
+
+            boolean actual = toPredicate(predicate).test("integerField");
+            boolean expected = true;
+
+            assertEquals(actual, expected);
+        }
+
+        @Test
+        @DisplayName("Should rethrow exception in predicate")
+        public void checkedPredicate_rethrowException() {
+            TestObjectWithPrivateFields object = TestObjectWithPrivateFields.builder()
+                    .integerField(1)
+                    .integerField2(2)
+                    .privateIntegerField(3)
+                    .build();
+            accessor.setObject(object);
+            CheckedPredicate<String, ReflectiveOperationException> predicate = accessor::doesFieldHaveValue;
+
+            assertThrows(NoSuchMethodException.class,
+                    () -> toPredicate(predicate).test("privateIntegerField"));
+        }
+
+        @Test
+        @DisplayName("Should test predicate on a stream")
+        public void checkedPredicate_stream_success() throws ReflectiveOperationException {
+            TestObject object = TestObject.builder()
+                    .integerField(1)
+                    .integerField3(3)
+                    .build();
+            accessor.setObject(object);
+            CheckedPredicate<String, ReflectiveOperationException> predicate = accessor::doesFieldHaveValue;
+
+            List<String> actual = Stream.of("integerField", "integerField2", "integerField3")
+                    .filter(toPredicate(predicate))
+                    .collect(Collectors.toList());
+            List<String> expected = List.of("integerField", "integerField3");
+            assertThat(actual).usingRecursiveComparison().ignoringCollectionOrder().isEqualTo(expected);
+        }
+
+        @Test
+        @DisplayName("Should rethrow exception in predicate tested on a stream")
+        public void checkedPredicate_stream_rethrowException() {
+            TestObjectWithPrivateFields object = TestObjectWithPrivateFields.builder()
+                    .integerField(1)
+                    .integerField3(3)
+                    .privateIntegerField(4)
+                    .build();
+            accessor.setObject(object);
+            CheckedPredicate<String, ReflectiveOperationException> predicate = accessor::doesFieldHaveValue;
+
+            assertThrows(NoSuchMethodException.class,
+                    () -> Stream.of("integerField", "integerField2", "integerField3", "privateIntegerField")
+                            .filter(toPredicate(predicate))
+                            .collect(Collectors.toList()));
         }
     }
 }

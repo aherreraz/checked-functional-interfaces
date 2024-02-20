@@ -10,6 +10,7 @@ import lombok.Getter;
 public class TestObjectWithPrivateFields {
     private Integer integerField;
     private Integer integerField2;
+    private Integer integerField3;
     @Getter(AccessLevel.NONE)
     private Integer privateIntegerField;
 }
