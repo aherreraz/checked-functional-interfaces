@@ -1,13 +1,11 @@
 package io.github.aherreraz.util;
 
-import io.github.aherreraz.util.function.CheckedConsumer;
-import io.github.aherreraz.util.function.CheckedFunction;
-import io.github.aherreraz.util.function.CheckedPredicate;
-import io.github.aherreraz.util.function.CheckedRunnable;
+import io.github.aherreraz.util.function.*;
 
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Predicate;
+import java.util.function.Supplier;
 
 public class LambdaExceptionUtil {
     public static <T, R, E extends Exception> Function<T, R> toFunction(CheckedFunction<T, R, E> function) throws E {
@@ -47,6 +45,18 @@ public class LambdaExceptionUtil {
             boolean result = false;
             try {
                 result = predicate.test(t);
+            } catch (Exception exception) {
+                throwActualException(exception);
+            }
+            return result;
+        };
+    }
+
+    public static <T, E extends Exception> Supplier<T> toSupplier(CheckedSupplier<T, E> supplier) throws E {
+        return () -> {
+            T result = null;
+            try {
+                result = supplier.get();
             } catch (Exception exception) {
                 throwActualException(exception);
             }

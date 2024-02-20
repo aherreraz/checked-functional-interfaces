@@ -6,6 +6,7 @@ package io.github.aherreraz.util.function;
  * @param <T> the type of input to the predicate
  * @param <E> the type of the exception that can be thrown
  */
+@FunctionalInterface
 public interface CheckedPredicate<T, E extends Exception> {
     /**
      * Evaluates the predicate on the given argument
